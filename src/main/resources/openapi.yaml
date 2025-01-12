@@ -1,0 +1,182 @@
+openapi: 3.0.0
+info:
+  title: Movie Recommendation API
+  version: 1.0.0
+  description: A REST API for managing movies, user preferences, and recommendations.
+servers:
+  - url: http://localhost:8080
+    description: Local server
+paths:
+  /movies:
+    get:
+      summary: Get a list of movies
+      description: Retrieve a paginated list of movies with optional filters.
+      parameters:
+        - name: genre
+          in: query
+          description: Filter movies by genre
+          required: false
+          schema:
+            type: string
+        - name: year
+          in: query
+          description: Filter movies by release year
+          required: false
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: Number of results per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A list of movies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Movie'
+                  total:
+                    type: integer
+                    description: Total number of movies
+                    example: 1
+  /movies/{id}:
+    get:
+      summary: Get details of a specific movie
+      description: Retrieve detailed information about a movie by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the movie
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movie details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+              example:
+                id: '1'
+                title: Harry Potter and the Sorcerer's Stone
+                genre: Fantasy
+                year: 2001
+                rating: 7.6
+                description: >-
+                  An orphaned boy discovers he is a wizard and attends a magical
+                  school.
+                director: Chris Columbus
+                cast:
+                  - Daniel Radcliffe
+                  - Emma Watson
+                  - Rupert Grint
+        '404':
+          description: Movie not found
+  /users/{id}/recommendations:
+    get:
+      summary: Get movie recommendations for a user
+      description: >-
+        Retrieve a list of recommended movies for a user based on their
+        preferences and ratings.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recommended movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+              example:
+                - id: '1'
+                  title: Harry Potter and the Sorcerer's Stone
+                  genre: Fantasy
+                  year: 2001
+                  rating: 7.6
+                  description: >-
+                    An orphaned boy discovers he is a wizard and attends a
+                    magical school.
+                  director: Chris Columbus
+                  cast:
+                    - Daniel Radcliffe
+                    - Emma Watson
+                    - Rupert Grint
+components:
+  schemas:
+    Movie:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the movie
+        title:
+          type: string
+          description: Title of the movie
+        genre:
+          type: string
+          description: Genre of the movie
+        year:
+          type: integer
+          description: Release year of the movie
+        rating:
+          type: number
+          format: float
+          description: Average rating of the movie
+        description:
+          type: string
+          description: Brief description of the movie
+        director:
+          type: string
+          description: Director of the movie
+        cast:
+          type: array
+          items:
+            type: string
+          description: List of main cast members
+      example:
+        id: '1'
+        title: Harry Potter and the Sorcerer's Stone
+        genre: Fantasy
+        year: 2001
+        rating: 7.6
+        description: An orphaned boy discovers he is a wizard and attends a magical school.
+        director: Chris Columbus
+        cast:
+          - Daniel Radcliffe
+          - Emma Watson
+          - Rupert Grint
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the user
+        name:
+          type: string
+          description: Name of the user
+        email:
+          type: string
+          description: Email of the user
